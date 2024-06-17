@@ -26,4 +26,9 @@ public class ErrorTreatment {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity treatValidationError(ValidationException ex){
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
 }
