@@ -29,8 +29,8 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CourseData>> getAllCourses(@PageableDefault(size= 10, sort = {"category","name"}) Pageable paginacao){
-        var courses = this.repository.findAll(paginacao).map(CourseData::new);
+    public ResponseEntity<Page<CourseData>> getAllCourses(@PageableDefault(size= 10, sort = {"category","name"}) Pageable pageable){
+        var courses = this.repository.findAll(pageable).map(CourseData::new);
         return ResponseEntity.ok(courses);
     }
 
@@ -40,7 +40,7 @@ public class CourseController {
         if(course.isPresent()) {
             return ResponseEntity.ok(new CourseData(course.get()));
         }
-        return ResponseEntity.badRequest().body("Curso não existe no banco de dados");
+        return ResponseEntity.badRequest().body("Curso não existe");
     }
 
     @PutMapping
