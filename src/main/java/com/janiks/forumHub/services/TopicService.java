@@ -1,9 +1,11 @@
 package com.janiks.forumHub.services;
 
+import com.janiks.forumHub.domain.course.Course;
 import com.janiks.forumHub.domain.topic.Status;
 import com.janiks.forumHub.domain.topic.Topic;
 import com.janiks.forumHub.dtos.TopicCreationData;
 import com.janiks.forumHub.dtos.TopicData;
+import com.janiks.forumHub.dtos.TopicUpdate;
 import com.janiks.forumHub.infra.exception.ValidationException;
 import com.janiks.forumHub.repositories.CourseRepository;
 import com.janiks.forumHub.repositories.TopicRepository;
@@ -29,10 +31,29 @@ public class TopicService {
             throw new ValidationException("Mensagem e/ou titulo já existem no banco de dados. Tópicos devem ser unicos!");
         }
 
-        var course = courseRepository.getReferenceById(data.course_id());
+        var course = getCourse(data.course_id());
 
         var topic = new Topic(null, data.title(), data.message(), LocalDateTime.now(), Status.ATIVO, course);
         topicRepository.save(topic);
         return new TopicData(topic);
+    }
+
+    public TopicData update(TopicUpdate data, Long topicId){
+        var topic = this.topicRepository.getReferenceById(topicId);
+        if(data.course_id() == null){
+            topic.update(data, null);
+        }else{
+            topic.update(data, getCourse(data.course_id()));
+        }
+        return new TopicData(topic);
+    }
+
+    public Course getCourse(Long id){
+        try{
+        var course = courseRepository.findById(id);
+        return course.get();
+        }catch (Exception ex){
+            throw new ValidationException("Id do curso inválido");
+        }
     }
 }

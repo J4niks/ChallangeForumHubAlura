@@ -1,7 +1,7 @@
 package com.janiks.forumHub.domain.topic;
 
 import com.janiks.forumHub.domain.course.Course;
-import com.janiks.forumHub.dtos.TopicData;
+import com.janiks.forumHub.dtos.TopicUpdate;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,4 +28,10 @@ public class Topic {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    public void update(TopicUpdate data, Course course) {
+        if(data.title() !=null){this.title = data.title();}
+        if(data.message() !=null){this.message = data.message();}
+        if(course != null){this.course = course;}
+        if(data.status() !=null){this.status = data.status();}
+    }
 }

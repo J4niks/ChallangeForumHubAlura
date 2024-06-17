@@ -9,7 +9,7 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     @Query(value = """
             SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
             FROM topicos
-            WHERE LEVENSHTEIN(title, :title) <= 10
+            WHERE LEVENSHTEIN(title, :title) <= 5
                OR LEVENSHTEIN(message, :message) <= 20
             """,
             nativeQuery = true)
