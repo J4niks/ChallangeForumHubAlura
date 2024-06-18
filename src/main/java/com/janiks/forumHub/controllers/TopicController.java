@@ -5,8 +5,11 @@ import com.janiks.forumHub.dtos.TopicCreationData;
 import com.janiks.forumHub.dtos.TopicData;
 import com.janiks.forumHub.dtos.TopicDataWithReplies;
 import com.janiks.forumHub.dtos.TopicUpdate;
+import com.janiks.forumHub.infra.security.SecurityValidation;
 import com.janiks.forumHub.repositories.TopicRepository;
 import com.janiks.forumHub.services.TopicService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +23,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
+@SecurityRequirement(name = "bearer-key")
 public class TopicController {
 
     @Autowired
@@ -28,10 +32,14 @@ public class TopicController {
     @Autowired
     private TopicRepository topicRepository;
 
+    @Autowired
+    private SecurityValidation securityValidation;
+
     @PostMapping
     @Transactional
-    public ResponseEntity createNewTopic(@RequestBody @Valid TopicCreationData data){
-        var dto = topicService.create(data);
+    public ResponseEntity createNewTopic(@RequestBody @Valid TopicCreationData data, HttpServletRequest request){
+        var token = request.getHeader("Authorization").replace("Bearer ", "");
+        var dto = topicService.create(data, token);
         return ResponseEntity.ok().body(dto);
     }
 
@@ -59,8 +67,12 @@ public class TopicController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity deleteTopic(@PathVariable Long id){
-        topicRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity deleteTopic(@PathVariable Long id, HttpServletRequest request){
+        var token = request.getHeader("Authorization").replace("Bearer ", "");
+        if(this.securityValidation.haveAuthoritiesForTopic(id,token)){
+            this.topicRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

@@ -6,6 +6,7 @@ import com.janiks.forumHub.dtos.ReplyCreationData;
 import com.janiks.forumHub.dtos.ReplyData;
 import com.janiks.forumHub.dtos.ReplyUpdate;
 import com.janiks.forumHub.infra.exception.ValidationException;
+import com.janiks.forumHub.infra.security.SecurityValidation;
 import com.janiks.forumHub.repositories.ReplyRepository;
 import com.janiks.forumHub.repositories.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,14 @@ public class ReplyService {
     private ReplyRepository replyRepository;
     @Autowired
     private TopicRepository topicRepository;
+    @Autowired
+    private SecurityValidation securityValidation;
 
 
-    public ReplyData create(Long topic_id, ReplyCreationData data) {
+    public ReplyData create(Long topic_id, ReplyCreationData data, String token) {
+        var user = securityValidation.getUser(token);
         var topic = getTopic(topic_id);
-        var reply = new Reply(null, data.message(), LocalDateTime.now(), Boolean.FALSE, topic);
+        var reply = new Reply(null, data.message(), LocalDateTime.now(), Boolean.FALSE, topic,user);
         this.replyRepository.save(reply);
         return new ReplyData(reply);
     }
@@ -42,4 +46,12 @@ public class ReplyService {
     }
 
 
+    public boolean delete(Long replyId, String token) {
+        var user = replyRepository.findById(replyId).get().getUser();
+        if(securityValidation.haveAuthorities(user, token)){
+            this.replyRepository.deleteById(replyId);
+            return true;
+        }
+        return false;
+    }
 }

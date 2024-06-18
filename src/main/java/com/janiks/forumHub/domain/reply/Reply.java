@@ -1,6 +1,7 @@
 package com.janiks.forumHub.domain.reply;
 
 import com.janiks.forumHub.domain.topic.Topic;
+import com.janiks.forumHub.domain.user.User;
 import com.janiks.forumHub.dtos.ReplyUpdate;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +26,9 @@ public class Reply {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "topico_id")
     private Topic topic;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public void update(ReplyUpdate data) {
         this.message = data.message();

@@ -1,0 +1,7 @@
+ALTER TABLE topicos
+ADD COLUMN user_id UUID;
+
+ALTER TABLE topicos
+ADD CONSTRAINT fk_user_id
+FOREIGN KEY (user_id) REFERENCES usuarios(id)
+ON DELETE CASCADE;

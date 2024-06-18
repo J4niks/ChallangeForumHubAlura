@@ -2,11 +2,14 @@ package com.janiks.forumHub.infra.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class ErrorTreatment {
@@ -30,5 +33,20 @@ public class ErrorTreatment {
     public ResponseEntity treatValidationError(ValidationException ex){
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity treatError400(MethodArgumentNotValidException exception){
+        var erros = exception.getFieldErrors();
+        return ResponseEntity.badRequest().body(erros.stream().map(DataValidationError::new).toList());
+    }
 
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity treatNoSushElement(NoSuchElementException ex){
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    private record DataValidationError(String campo, String mensagem){
+        public DataValidationError(FieldError erro){
+            this(erro.getField(), erro.getDefaultMessage());
+        }
+    }
 }

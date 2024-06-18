@@ -3,6 +3,7 @@ package com.janiks.forumHub.controllers;
 import com.janiks.forumHub.domain.course.Course;
 import com.janiks.forumHub.dtos.CourseData;
 import com.janiks.forumHub.repositories.CourseRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cursos")
+@SecurityRequirement(name = "bearer-key")
 public class CourseController {
 
     @Autowired

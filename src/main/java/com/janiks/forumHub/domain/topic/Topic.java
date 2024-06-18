@@ -2,6 +2,7 @@ package com.janiks.forumHub.domain.topic;
 
 import com.janiks.forumHub.domain.course.Course;
 import com.janiks.forumHub.domain.reply.Reply;
+import com.janiks.forumHub.domain.user.User;
 import com.janiks.forumHub.dtos.TopicUpdate;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,8 +33,17 @@ public class Topic {
     private Course course;
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
     private List<Reply> replies = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public Topic(Long id, String title, String message, LocalDateTime now, Status status, Course course) {
+    public Topic(String title, String message, LocalDateTime now, Status status, Course course, User user) {
+        this.title = title;
+        this.message = message;
+        this.creationDate = now;
+        this.status = status;
+        this.course = course;
+        this.user = user;
     }
 
     public void update(TopicUpdate data, Course course) {
