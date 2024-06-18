@@ -1,7 +1,9 @@
 package com.janiks.forumHub.controllers;
 
+import com.janiks.forumHub.domain.topic.Topic;
 import com.janiks.forumHub.dtos.TopicCreationData;
 import com.janiks.forumHub.dtos.TopicData;
+import com.janiks.forumHub.dtos.TopicDataWithReplies;
 import com.janiks.forumHub.dtos.TopicUpdate;
 import com.janiks.forumHub.repositories.TopicRepository;
 import com.janiks.forumHub.services.TopicService;
@@ -13,6 +15,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -32,16 +36,16 @@ public class TopicController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<TopicData>> getAllTopics(@PageableDefault(size= 1, sort = {"course","title"}) Pageable pageable){
+    public ResponseEntity<Page<TopicData>> getAllTopics(@PageableDefault(size= 10, sort = {"creation_date","course"}) Pageable pageable){
         var topics = this.topicRepository.findAll(pageable).map(TopicData::new);
         return ResponseEntity.ok().body(topics);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getTopic(@PathVariable Long id){
-        var topic = this.topicRepository.findById(id);
+        Optional<Topic> topic = this.topicRepository.findByIdWithCourse(id);
         if(topic.isPresent()){
-            return ResponseEntity.ok().body(new TopicData(topic.get()));
+            return ResponseEntity.ok().body(new TopicDataWithReplies(topic.get()));
         }
         return ResponseEntity.badRequest().body("Tópico não existe");
     }

@@ -1,7 +1,5 @@
 package com.janiks.forumHub.domain.reply;
 
-import com.janiks.forumHub.domain.course.Course;
-import com.janiks.forumHub.domain.topic.Status;
 import com.janiks.forumHub.domain.topic.Topic;
 import jakarta.persistence.*;
 import lombok.*;

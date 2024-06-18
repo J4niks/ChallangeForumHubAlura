@@ -1,11 +1,14 @@
 package com.janiks.forumHub.domain.topic;
 
 import com.janiks.forumHub.domain.course.Course;
+import com.janiks.forumHub.domain.reply.Reply;
 import com.janiks.forumHub.dtos.TopicUpdate;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "topicos")
 @Entity(name = "Topic")
@@ -27,6 +30,11 @@ public class Topic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     private Course course;
+    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
+    private List<Reply> replies = new ArrayList<>();
+
+    public Topic(Long id, String title, String message, LocalDateTime now, Status status, Course course) {
+    }
 
     public void update(TopicUpdate data, Course course) {
         if(data.title() !=null){this.title = data.title();}

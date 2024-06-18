@@ -24,17 +24,14 @@ public class TopicService {
     private CourseRepository courseRepository;
 
     public TopicData create(TopicCreationData data) {
-        if(!courseRepository.existsById(data.course_id())){
-            throw new ValidationException("Id do curso informado não existe");
-        }
-        if(topicRepository.existsSimilarTopicsByLevenshteinDistance(data.title(), data.message())){
+        if(this.topicRepository.existsSimilarTopicsByLevenshteinDistance(data.title(), data.message())){
             throw new ValidationException("Mensagem e/ou titulo já existem no banco de dados. Tópicos devem ser unicos!");
         }
 
         var course = getCourse(data.course_id());
 
         var topic = new Topic(null, data.title(), data.message(), LocalDateTime.now(), Status.ATIVO, course);
-        topicRepository.save(topic);
+        this.topicRepository.save(topic);
         return new TopicData(topic);
     }
 
@@ -49,11 +46,9 @@ public class TopicService {
     }
 
     public Course getCourse(Long id){
-        try{
-        var course = courseRepository.findById(id);
-        return course.get();
-        }catch (Exception ex){
-            throw new ValidationException("Id do curso inválido");
+        if(!this.courseRepository.existsById(id)){
+            throw new ValidationException("Id do curso informado não existe");
         }
+        return this.courseRepository.getReferenceById(id);
     }
 }
