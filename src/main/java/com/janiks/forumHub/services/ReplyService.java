@@ -4,6 +4,7 @@ import com.janiks.forumHub.domain.reply.Reply;
 import com.janiks.forumHub.domain.topic.Topic;
 import com.janiks.forumHub.dtos.ReplyCreationData;
 import com.janiks.forumHub.dtos.ReplyData;
+import com.janiks.forumHub.dtos.ReplyUpdate;
 import com.janiks.forumHub.infra.exception.ValidationException;
 import com.janiks.forumHub.repositories.ReplyRepository;
 import com.janiks.forumHub.repositories.TopicRepository;
@@ -27,6 +28,11 @@ public class ReplyService {
         this.replyRepository.save(reply);
         return new ReplyData(reply);
     }
+    public ReplyData update(ReplyUpdate data) {
+        var reply = replyRepository.getReferenceById(data.reply_id());
+        reply.update(data);
+        return new ReplyData(reply);
+    }
 
     private Topic getTopic(Long topicId) {
         if(!this.topicRepository.existsById(topicId)){
@@ -34,4 +40,6 @@ public class ReplyService {
         }
         return this.topicRepository.getReferenceById(topicId);
     }
+
+
 }

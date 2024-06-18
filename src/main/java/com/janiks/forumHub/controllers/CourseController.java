@@ -57,7 +57,7 @@ public class CourseController {
         var course = this.repository.findById(id);
         if(course.isPresent()){
             this.repository.deleteById(id);
-            return ResponseEntity.ok().body("Curso apagado com sucesso");
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.badRequest().body("Curso não existe no banco de dados");
     }

@@ -61,6 +61,6 @@ public class TopicController {
     @Transactional
     public ResponseEntity deleteTopic(@PathVariable Long id){
         topicRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
