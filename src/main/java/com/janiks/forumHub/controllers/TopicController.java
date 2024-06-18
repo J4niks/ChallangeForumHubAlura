@@ -44,7 +44,7 @@ public class TopicController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<TopicData>> getAllTopics(@PageableDefault(size= 10, sort = {"creation_date","course"}) Pageable pageable){
+    public ResponseEntity<Page<TopicData>> getAllTopics(@PageableDefault(size= 10, sort = {"creationDate","course"}) Pageable pageable){
         var topics = this.topicRepository.findAll(pageable).map(TopicData::new);
         return ResponseEntity.ok().body(topics);
     }

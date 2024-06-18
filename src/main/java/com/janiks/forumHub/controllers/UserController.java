@@ -1,10 +1,8 @@
 package com.janiks.forumHub.controllers;
 
 import com.janiks.forumHub.domain.user.User;
-import com.janiks.forumHub.domain.user.UserRole;
 import com.janiks.forumHub.dtos.UserCreationData;
 import com.janiks.forumHub.dtos.UserDetails;
-import com.janiks.forumHub.dtos.UserEmail;
 import com.janiks.forumHub.dtos.UserUpdate;
 import com.janiks.forumHub.infra.security.SecurityValidation;
 import com.janiks.forumHub.repositories.UserRepository;
@@ -14,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,11 +48,11 @@ public class UserController {
         return ResponseEntity.ok().body(dto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{email}")
     @Transactional
-    public ResponseEntity deleteUser(@RequestBody @Valid UserEmail data, HttpServletRequest request){
+    public ResponseEntity deleteUser(@PathVariable String email, HttpServletRequest request){
         String token =request.getHeader("Authorization").replace("Bearer ", "");
-        if(userService.delete(data.email(), token)){
+        if(userService.delete(email, token)){
             return ResponseEntity.noContent().build();
         };
         return ResponseEntity.badRequest().build();
