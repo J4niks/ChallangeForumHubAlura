@@ -21,7 +21,6 @@ public class UserService {
     private UserRepository userRepository;
 
     public UserDetails update(UserUpdate data, String token, String email) {
-        var passwordPattern = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$");
         var receivedUser = (User) this.userRepository.findByEmail(email);
         if(securityValidation.haveAuthorities(receivedUser, token)) {
             if(isItBlank(data.name())){
