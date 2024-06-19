@@ -20,7 +20,15 @@ public class Course {
     private Category category;
 
     public void update(CourseData data) {
-        this.name = data.name();
-        this.category = data.category();
+        if(isItBlank(data.name())){
+            this.name = data.name();
+        }
+        if(isItBlank(String.valueOf(data.category()))){
+            this.category = data.category();
+        }
+    }
+
+    private boolean isItBlank(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 }
