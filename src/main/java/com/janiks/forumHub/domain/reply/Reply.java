@@ -30,10 +30,16 @@ public class Reply {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void update(ReplyUpdate data) {
-        this.message = data.message();
-        if(data.soluction() != null){
-            this.soluction = data.soluction();
+    public void update(ReplyUpdate updateData, boolean setSoluction) {
+        if(isItBlank(updateData.message())){
+           this.message = updateData.message();
         }
+        if(setSoluction){
+            this.soluction = updateData.soluction();
+        }
+    }
+
+    private boolean isItBlank(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 }

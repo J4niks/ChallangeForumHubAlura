@@ -1,6 +1,7 @@
 package com.janiks.forumHub.infra.security;
 
 import com.janiks.forumHub.domain.user.User;
+import com.janiks.forumHub.infra.exception.ValidationException;
 import com.janiks.forumHub.repositories.TopicRepository;
 import com.janiks.forumHub.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class SecurityValidation {
         if(isTheSameUser(user,getUser(token)) || isAdmin(token)){
             return true;
         }
-        return false;
+        throw new ValidationException("Usuário não possui as credenciais necessárias para performar esta ação!");
     }
 
     public Boolean isTheSameUser(User topicUser, User receivedUser){

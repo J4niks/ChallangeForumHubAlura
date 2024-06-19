@@ -32,10 +32,29 @@ public class ReplyService {
         this.replyRepository.save(reply);
         return new ReplyData(reply);
     }
-    public ReplyData update(ReplyUpdate data) {
+
+    public ReplyData update(ReplyUpdate data , Long topicId, String token) {
         var reply = replyRepository.getReferenceById(data.reply_id());
-        reply.update(data);
+        if(this.securityValidation.haveAuthorities(reply.getUser(),token)){
+            if(data.soluction() != null) {
+                reply.update(data, setAllReplyToFalse(topicId));
+            }
+            reply.update(data, false);
+        }
         return new ReplyData(reply);
+    }
+
+    private boolean setAllReplyToFalse(Long topicId) {
+        var topic = this.topicRepository.getReferenceById(topicId);
+        var replies = replyRepository.findAllFromTopic(topic.getId());
+        try{
+            for(Reply reply : replies){
+                reply.setSoluction(false);
+            }
+            return true;
+        }catch (Exception ex){
+            throw new ValidationException(ex.getMessage());
+        }
     }
 
     private Topic getTopic(Long topicId) {
@@ -53,5 +72,9 @@ public class ReplyService {
             return true;
         }
         return false;
+    }
+
+    private boolean isItBlank(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 }

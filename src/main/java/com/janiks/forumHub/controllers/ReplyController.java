@@ -32,8 +32,9 @@
 
         @PutMapping
         @Transactional
-        public ResponseEntity updateReply(@RequestBody @Valid ReplyUpdate data){
-            var dto = this.replyService.update(data);
+        public ResponseEntity updateReply(@RequestBody @Valid ReplyUpdate data, @PathVariable Long topic_id, HttpServletRequest request){
+            var token = request.getHeader("Authorization").replace("Bearer ", "");
+            var dto = this.replyService.update(data, topic_id, token);
             return ResponseEntity.ok(dto);
         }
 
