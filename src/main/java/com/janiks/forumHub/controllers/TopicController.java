@@ -60,8 +60,9 @@ public class TopicController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<TopicData> editTopic(@RequestBody @Valid TopicUpdate data, @PathVariable Long id){
-        var dto = topicService.update(data, id);
+    public ResponseEntity<TopicData> editTopic(@RequestBody @Valid TopicUpdate data, @PathVariable Long id, HttpServletRequest request){
+        var token = request.getHeader("Authorization").replace("Bearer ", "");
+        var dto = topicService.update(id, token, data);
         return ResponseEntity.ok().body(dto);
     }
 

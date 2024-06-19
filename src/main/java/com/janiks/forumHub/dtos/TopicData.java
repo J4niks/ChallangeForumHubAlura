@@ -1,5 +1,6 @@
 package com.janiks.forumHub.dtos;
 
+import com.janiks.forumHub.domain.topic.Status;
 import com.janiks.forumHub.domain.topic.Topic;
 
 import java.time.LocalDateTime;
@@ -11,9 +12,10 @@ public record TopicData(
         LocalDateTime creation_date,
         String message,
         String course,
-        UUID user_id
+        UUID user_id,
+        Status status
 ) {
     public TopicData(Topic topic) {
-        this(topic.getId(), topic.getTitle(),topic.getCreationDate() ,topic.getMessage(), topic.getCourse().getName(), topic.getUser().getId());
+        this(topic.getId(), topic.getTitle(),topic.getCreationDate() ,topic.getMessage(), topic.getCourse().getName(), topic.getUser().getId(), topic.getStatus());
     }
 }

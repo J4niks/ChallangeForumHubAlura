@@ -3,7 +3,6 @@ package com.janiks.forumHub.services;
 import com.janiks.forumHub.domain.course.Course;
 import com.janiks.forumHub.domain.topic.Status;
 import com.janiks.forumHub.domain.topic.Topic;
-import com.janiks.forumHub.domain.user.User;
 import com.janiks.forumHub.dtos.TopicCreationData;
 import com.janiks.forumHub.dtos.TopicData;
 import com.janiks.forumHub.dtos.TopicUpdate;
@@ -37,10 +36,7 @@ public class TopicService {
     private SecurityValidation securityValidation;
 
     public TopicData create(TopicCreationData data, String token) {
-        if(this.topicRepository.existsSimilarTopicsByLevenshteinDistance(data.title(), data.message())){
-            throw new ValidationException("Mensagem e/ou titulo já existem no banco de dados. Tópicos devem ser unicos!");
-        }
-
+        checkForSimilarTopics(data.title(), data.message());
         var course = getCourse(data.course_id());
         var user = this.securityValidation.getUser(token);
 
@@ -49,14 +45,29 @@ public class TopicService {
         return new TopicData(topic);
     }
 
-
-
-    public TopicData update(TopicUpdate data, Long topicId){
-        var topic = this.topicRepository.getReferenceById(topicId);
-        if(data.course_id() == null){
-            topic.update(data, null);
-        }else{
-            topic.update(data, getCourse(data.course_id()));
+    public TopicData update(Long id, String token, TopicUpdate data){
+        var topic = this.topicRepository.getReferenceById(id);
+        var existTitle = this.topicRepository.existsSimilarTitle(data.title());
+        var existsMessage = this.topicRepository.existsSimilarMessage(data.message());
+        if(this.securityValidation.haveAuthorities(topic.getUser(), token)){
+            if(isItBlank(data.title()) && !existTitle){
+                topic.setTitle(data.title());
+            }
+            if(existTitle){
+                throw new ValidationException("Um tópico com esse titulo já existe");
+            }
+            if(isItBlank(data.message()) && !existsMessage){
+                topic.setMessage(data.message());
+            }
+            if(existsMessage){
+                throw new ValidationException("Um tópico com essa mensagem já existe");
+            }
+            if(isItBlank(String.valueOf(data.course_id()))){
+                topic.setCourse(this.courseRepository.getReferenceById(data.course_id()));
+            }
+            if(isItBlank(String.valueOf(data.status()))){
+                topic.setStatus(data.status());
+            }
         }
         return new TopicData(topic);
     }
@@ -68,4 +79,13 @@ public class TopicService {
         return this.courseRepository.getReferenceById(id);
     }
 
+    private boolean isItBlank(String str) {
+        return str != null && !str.trim().isEmpty();
+    }
+
+    private void checkForSimilarTopics(String title, String message){
+        if(this.topicRepository.existsSimilarTitle(title) || this.topicRepository.existsSimilarMessage(message)){
+            throw new ValidationException("O titulo e/ou mensagem já existem");
+        }
+    }
 }
