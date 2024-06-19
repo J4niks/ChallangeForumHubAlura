@@ -1,7 +1,9 @@
 package com.janiks.forumHub.infra.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,8 +17,8 @@ import java.util.NoSuchElementException;
 public class ErrorTreatment {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity treatErro404(){
-        return ResponseEntity.notFound().build();
+    public ResponseEntity treatErro404(EntityNotFoundException ex){
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
@@ -41,6 +43,11 @@ public class ErrorTreatment {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity treatNoSushElement(NoSuchElementException ex){
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity treatNotReadableException(HttpMessageNotReadableException ex){
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
