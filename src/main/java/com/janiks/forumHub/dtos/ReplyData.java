@@ -10,11 +10,10 @@ public record ReplyData(
         String message,
         LocalDateTime data,
         Boolean soluction,
-        Long topic_id,
-        UUID user_id
+        Long topic_id
 
 ) {
     public ReplyData(Reply reply) {
-        this(reply.getId(), reply.getMessage(), reply.getCreationDate(), reply.getSoluction(), reply.getTopic().getId(), reply.getUser().getId());
+        this(reply.getId(), reply.getMessage(), reply.getCreationDate(), reply.getSoluction(), reply.getTopic().getId());
     }
 }
