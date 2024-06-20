@@ -8,7 +8,9 @@ import com.janiks.forumHub.dtos.TopicUpdate;
 import com.janiks.forumHub.infra.security.SecurityValidation;
 import com.janiks.forumHub.repositories.TopicRepository;
 import com.janiks.forumHub.services.TopicService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/topicos")
 @SecurityRequirement(name = "bearer-key")
+@Tag(name = "Tópicos")
 public class TopicController {
 
     @Autowired
@@ -37,6 +40,7 @@ public class TopicController {
 
     @PostMapping
     @Transactional
+    @Operation(summary = "Criar tópico", description = "Criação de um novo tópico")
     public ResponseEntity createNewTopic(@RequestBody @Valid TopicCreationData data, HttpServletRequest request){
         var token = request.getHeader("Authorization").replace("Bearer ", "");
         var dto = topicService.create(data, token);
@@ -44,12 +48,14 @@ public class TopicController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar todos", description = "Listar tópicos (10 por pagina ordenados por data de criação)")
     public ResponseEntity<Page<TopicData>> getAllTopics(@PageableDefault(size= 10, sort = {"creationDate","course"}) Pageable pageable){
         var topics = this.topicRepository.findAll(pageable).map(TopicData::new);
         return ResponseEntity.ok().body(topics);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Lista tópico por id", description = "Lista um tópico específico e todas as suas respostas")
     public ResponseEntity getTopic(@PathVariable Long id){
         Optional<Topic> topic = this.topicRepository.findByIdWithCourse(id);
         if(topic.isPresent()){
@@ -60,6 +66,7 @@ public class TopicController {
 
     @PutMapping("/{id}")
     @Transactional
+    @Operation(summary = "Editar", description = "Edição de tópico (Apenas criador e/ou ADMIN)")
     public ResponseEntity<TopicData> editTopic(@RequestBody @Valid TopicUpdate data, @PathVariable Long id, HttpServletRequest request){
         var token = request.getHeader("Authorization").replace("Bearer ", "");
         var dto = topicService.update(id, token, data);
@@ -68,6 +75,7 @@ public class TopicController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "Apagar", description = "Apagar tópico (Apenas criador e/ou ADMIN)")
     public ResponseEntity deleteTopic(@PathVariable Long id, HttpServletRequest request){
         var token = request.getHeader("Authorization").replace("Bearer ", "");
         if(this.securityValidation.haveAuthoritiesForTopic(id,token)){
