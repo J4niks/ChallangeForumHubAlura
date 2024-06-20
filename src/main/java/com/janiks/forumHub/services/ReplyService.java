@@ -1,6 +1,7 @@
 package com.janiks.forumHub.services;
 
 import com.janiks.forumHub.domain.reply.Reply;
+import com.janiks.forumHub.domain.topic.Status;
 import com.janiks.forumHub.domain.topic.Topic;
 import com.janiks.forumHub.dtos.ReplyCreationData;
 import com.janiks.forumHub.dtos.ReplyData;
@@ -27,7 +28,7 @@ public class ReplyService {
 
     public ReplyData create(Long topic_id, ReplyCreationData data, String token) {
         var user = securityValidation.getUser(token);
-        var topic = getTopic(topic_id);
+        var topic = getTopicFromDB(topic_id);
         var reply = new Reply(null, data.message(), LocalDateTime.now(), Boolean.FALSE, topic,user);
         this.replyRepository.save(reply);
         return new ReplyData(reply);
@@ -35,11 +36,27 @@ public class ReplyService {
 
     public ReplyData update(ReplyUpdate data , Long topicId, String token) {
         var reply = replyRepository.getReferenceById(data.reply_id());
-        if(this.securityValidation.haveAuthorities(reply.getUser(),token)){
-            if(data.soluction() != null) {
-                reply.update(data, setAllReplyToFalse(topicId));
+        if(isItBlank(data.message())){
+            if(this.securityValidation.haveAuthorities(reply.getUser(), token)){
+                reply.setMessage(data.message());
+            }else{
+                throw new ValidationException("Usuário não possui as credenciais necessárias para performar esta ação");
             }
-            reply.update(data, false);
+        }
+        if(data.soluction() != null){
+            if(this.securityValidation.haveAuthorities(reply.getTopic().getUser(),token)){
+                if(data.soluction()){
+                    setAllReplyToFalse(topicId);
+                    reply.setSoluction(true);
+                    reply.getTopic().setStatus(Status.RESOLVIDO);
+                }
+                if(!data.soluction()){
+                    reply.setSoluction(false);
+                    reply.getTopic().setStatus(Status.ATIVO);
+                }
+            }else{
+                throw new ValidationException("Usuário não possui as credenciais necessárias para performar esta ação");
+            }
         }
         return new ReplyData(reply);
     }
@@ -57,7 +74,7 @@ public class ReplyService {
         }
     }
 
-    private Topic getTopic(Long topicId) {
+    private Topic getTopicFromDB(Long topicId) {
         if(!this.topicRepository.existsById(topicId)){
             throw new ValidationException("Id do tópico informado não existe");
         }
