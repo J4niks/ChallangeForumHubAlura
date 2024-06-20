@@ -35,10 +35,14 @@ public class User implements UserDetails {
         this.name = data.name();
         this.email = data.email();
         this.password = new BCryptPasswordEncoder().encode(data.password());
-        if(isAdmin || "USER".equals(data.role().name())){
+        if(data.role() != null && !isAdmin && "ADMIN".equals(data.role().name())){
+            throw new ValidationException("Você não tem permissões para cadastrar um usuário com a role: " + data.role());
+        }
+        if(isAdmin) {
             this.role = data.role();
-        }else {
-            throw new ValidationException("Você não tem permissoes para cadastrar um usuario com a role: " + data.role());
+        }
+        if(!isAdmin || data.role() == null){
+            this.role = UserRole.USER;
         }
     }
 
