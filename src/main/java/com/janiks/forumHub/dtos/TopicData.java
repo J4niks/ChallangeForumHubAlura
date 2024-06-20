@@ -12,10 +12,9 @@ public record TopicData(
         LocalDateTime creation_date,
         String message,
         String course,
-        UUID user_id,
         Status status
 ) {
     public TopicData(Topic topic) {
-        this(topic.getId(), topic.getTitle(),topic.getCreationDate() ,topic.getMessage(), topic.getCourse().getName(), topic.getUser().getId(), topic.getStatus());
+        this(topic.getId(), topic.getTitle(),topic.getCreationDate() ,topic.getMessage(), topic.getCourse().getName(), topic.getStatus());
     }
 }

@@ -1,6 +1,7 @@
 package com.janiks.forumHub.dtos;
 
 import com.janiks.forumHub.domain.course.Course;
+import com.janiks.forumHub.domain.topic.Status;
 import com.janiks.forumHub.domain.topic.Topic;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public record TopicDataWithReplies(
         LocalDateTime creation_date,
         String message,
         Course course,
+        Status status,
         List<ReplyData> replies
 ) {
     public TopicDataWithReplies(Topic topic) {
@@ -21,6 +23,7 @@ public record TopicDataWithReplies(
                 topic.getCreationDate(),
                 topic.getMessage(),
                 topic.getCourse(),
+                topic.getStatus(),
                 topic.getReplies().stream()
                         .map(ReplyData::new)
                         .collect(Collectors.toList())
