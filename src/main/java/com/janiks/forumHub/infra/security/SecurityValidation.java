@@ -32,7 +32,7 @@ public class SecurityValidation {
         if(isTheSameUser(user,getUser(token)) || isAdmin(token)){
             return true;
         }
-        throw new ValidationException("Usuário não possui as credenciais necessárias para performar esta ação!");
+        return false;
     }
 
     public Boolean isTheSameUser(User topicUser, User receivedUser){
