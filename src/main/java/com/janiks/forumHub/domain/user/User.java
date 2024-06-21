@@ -1,8 +1,6 @@
 package com.janiks.forumHub.domain.user;
 
 import com.janiks.forumHub.dtos.UserCreationData;
-import com.janiks.forumHub.dtos.UserUpdate;
-import com.janiks.forumHub.infra.exception.ValidationException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,19 +29,11 @@ public class User implements UserDetails {
     private String password;
     private UserRole role;
 
-    public User(UserCreationData data, Boolean isAdmin) {
+    public User(UserCreationData data) {
         this.name = data.name();
         this.email = data.email();
         this.password = new BCryptPasswordEncoder().encode(data.password());
-        if(data.role() != null && !isAdmin && "ADMIN".equals(data.role().name())){
-            throw new ValidationException("Você não tem permissões para cadastrar um usuário com a role: " + data.role());
-        }
-        if(isAdmin) {
-            this.role = data.role();
-        }
-        if(!isAdmin || data.role() == null){
-            this.role = UserRole.USER;
-        }
+        this.role = UserRole.USER;
     }
 
 

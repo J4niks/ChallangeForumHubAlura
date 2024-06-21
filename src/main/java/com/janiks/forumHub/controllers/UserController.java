@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@SecurityRequirement(name = "bearer-key")
 @Tag(name = "Usuários")
 public class UserController {
 
@@ -35,12 +34,10 @@ public class UserController {
     @Transactional
     @Operation(summary = "Registrar", description = "Registro de usuários (Parâmetro 'role' necessário apenas para ADMIN)")
     public ResponseEntity registrarUsuario(@RequestBody @Valid UserCreationData data, HttpServletRequest request){
-        String token =request.getHeader("Authorization").replace("Bearer ", "");
         if(this.repository.findByEmail(data.email()) != null || this.repository.existsByName(data.name())){
             throw new ValidationException("Usuário com esse email e/ou nome já está cadastrado");
         }
-        var isAdmin = securityValidation.isAdmin(token);
-        var user = new User(data, isAdmin);
+        var user = new User(data);
         this.repository.save(user);
         return ResponseEntity.ok(new UserDetails(user));
     }
@@ -48,6 +45,7 @@ public class UserController {
     @PutMapping("/{email}")
     @Transactional
     @Operation(summary = "Editar", description = "Edição de usuários por email")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity updateUser(@RequestBody @Valid UserUpdate data, HttpServletRequest request, @PathVariable String email){
         String token =request.getHeader("Authorization").replace("Bearer ", "");
         var dto = this.userService.update(data, token, email);
@@ -57,6 +55,7 @@ public class UserController {
     @DeleteMapping("/{email}")
     @Transactional
     @Operation(summary = "Apagar", description = "Apagar usuários por email")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity deleteUser(@PathVariable String email, HttpServletRequest request){
         String token =request.getHeader("Authorization").replace("Bearer ", "");
         if(userService.delete(email, token)){
