@@ -1,9 +1,16 @@
-# ForumHub API
+<h1 align="center">ForumHub API</h1>
+<br>
+
+![ONE](https://github.com/J4niks/ChallangeForumHubAlura/assets/132161011/6bbc7ff3-413f-46ef-98d6-b078eb36c7b2)
 
 ## Descrição
-Este projeto implementa uma API RESTful para gerenciar um fórum de discussões sobre cursos, tópicos, respostas e usuários. Ele oferece operações para criar, listar, atualizar e excluir cursos, tópicos, respostas e usuários, além de funcionalidades de autenticação e autorização com tokens JWT.
+Este projeto implementa uma API REST criada para o challange Forum HUB. Ele oferece operações para criar, listar, atualizar e excluir cursos, tópicos, respostas e usuários, além de funcionalidades de autenticação e autorização com tokens JWT.
 
-## Funcionalidades Principais
+
+<br>
+<br>
+
+# Funcionalidades Principais
 
 ### Autenticação e Segurança
 
@@ -73,6 +80,11 @@ mvn clean package
 ```bash
 java -jar target/forumHub-0.0.1-SNAPSHOT.jar
 ```
+
+#### Usuário padão
+- email : root.user@forum.hub
+- password : ThisIsAAdminUser
+
 #### Acessando a Documentação da API
 - Após iniciar o projeto, acesse http://localhost:8080/swagger-ui.html para visualizar a documentação interativa da API gerada pelo Swagger.
 
