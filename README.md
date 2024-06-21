@@ -42,13 +42,23 @@ Este projeto implementa uma API RESTful para gerenciar um fórum de discussões 
 - **Springdoc OpenAPI**: Geração de documentação interativa da API com o Swagger.
 - **Java JWT (Auth0)**: Biblioteca para manipulação de tokens JWT.
 
-## Configuração e Execução
+# Configuração e Execução
 
+## Docker 
+### Pré-requisitos
+- Docker instalado
+- Variáveis de ambiente `POSTGRES_DB_NAME`, `POSTGRES_DB_USER`, `POSTGRES_DB_PASSWORD` e `JWT_API_SECRET`.
+- Entre na pasta do projeto de use o comando:
+```
+docker-compose up --build
+```
+
+## Maven
 ### Pré-requisitos
 
 - Java 17 ou superior instalado.
 - Maven instalado para construção do projeto.
-- Banco de dados PostgreSQL configurado com as variáveis de ambiente `POSTGRES_DB_HOST`, `POSTGRES_DB_NAME`, `POSTGRES_DB_USER` e `POSTGRES_DB_PASSWORD`.
+- Variáveis de ambiente `POSTGRES_DB_HOST`, `POSTGRES_DB_NAME`, `POSTGRES_DB_USER`, `POSTGRES_DB_PASSWORD` e `JWT_API_SECRET`.
 
 ### Configuração do Banco de Dados
 
